@@ -1,34 +1,34 @@
 from enum import Enum
-from ...core import V2Client, v2_post
+from ...core import V1Client, v1_get
 
 class Path(Enum):
+    BTCDepositAddress = 'btc_deposit_address/'
     Balance = 'balance/'
     DailyBalance = 'daily_balance/'
-    DepositAddress = 'deposit_address/'
     UserInformation = 'user_info/'
     VirtualAccount = 'virtual_account/'
 
-class AccountClient(V2Client):
+class AccountClient(V1Client):
     def __init__(self, secret):
         super().__init__(secret)
         self.uri += 'account/'
 
-    @v2_post(Path.Balance)
+    @v1_get(Path.BTCDepositAddress)
+    def get_btc_deposit_address(self):
+        ...
+
+    @v1_get(Path.Balance)
     def get_balance(self):
         ...
 
-    @v2_post(Path.DailyBalance)
+    @v1_get(Path.DailyBalance)
     def get_daily_balance(self):
         ...
 
-    @v2_post(Path.DepositAddress)
-    def get_deposit_address(self):
-        ...
-
-    @v2_post(Path.UserInformation)
+    @v1_get(Path.UserInformation)
     def get_user_information(self):
         ...
 
-    @v2_post(Path.VirtualAccount)
+    @v1_get(Path.VirtualAccount)
     def get_virtual_account(self):
         ...

@@ -1,6 +1,8 @@
 from enum import Enum
 
 
+V1 = 'v1'
+V2 = 'v2'
 ACCESS_TOKEN = 'access_token'
 SECRET_KEY = 'secret_key'
 NONCE = 'nonce'
@@ -32,6 +34,10 @@ class AuthType(Enum):
     QTUM = 'qtum'
     IOTA = 'iota'
     LTC = 'ltc'
+
+class WalletType(Enum):
+    TRADE = 'trade'
+    NORMAL = 'normal'
 
 class IsAsk(Enum):
     ASK = 1

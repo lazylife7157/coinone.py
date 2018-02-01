@@ -1,5 +1,5 @@
 from enum import Enum
-from ...core import V2Client, v2_request
+from ...core import V2Client, v2_post
 
 class Path(Enum):
     CancelOrder = 'cancel/'
@@ -14,26 +14,26 @@ class OrderClient(V2Client):
         super().__init__(secret)
         self.uri += 'order/'
 
-    @v2_request(Path.CancelOrder)
+    @v2_post(Path.CancelOrder)
     def cancel_order(self, order_id, price, qty, is_ask, currency):
         ...
 
-    @v2_request(Path.LimitBuy)
+    @v2_post(Path.LimitBuy)
     def limit_buy(self, price, qty, currency):
         ...
 
-    @v2_request(Path.LimitSell)
+    @v2_post(Path.LimitSell)
     def limitSell(self, price, qty, currency):
         ...
 
-    @v2_request(Path.MyCompleteOrders)
+    @v2_post(Path.MyCompleteOrders)
     def get_my_complete_orders(self, currency):
         ...
 
-    @v2_request(Path.MyLimitOrders)
+    @v2_post(Path.MyLimitOrders)
     def get_my_limit_orders(self, currency):
         ...
 
-    @v2_request(Path.MyOrderInformation)
+    @v2_post(Path.MyOrderInformation)
     def get_my_order_information(self, order_id, currency):
         ...

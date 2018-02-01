@@ -5,7 +5,7 @@ import hmac
 import json
 import time
 import requests
-from coinone.params import ACCESS_TOKEN, SECRET_KEY, NONCE
+from coinone.params import V1, V2, ACCESS_TOKEN, SECRET_KEY, NONCE
 
 
 class BaseClient:
@@ -13,33 +13,60 @@ class BaseClient:
         self.uri = 'https://api.coinone.co.kr/'
 
 SECRET_FILE = 'secret.json'
+class V1Client(BaseClient):
+    def __init__(self, secret_file=SECRET_FILE):
+        super().__init__()
+        self.uri += 'v1/'
+        secret = _get_secret(secret_file)
+        self.access_token = secret[V1][ACCESS_TOKEN]
+
 class V2Client(BaseClient):
     def __init__(self, secret_file=SECRET_FILE):
         super().__init__()
         self.uri += 'v2/'
         secret = _get_secret(secret_file)
-        self.access_token = secret[ACCESS_TOKEN]
-        self.secret_key = secret[SECRET_KEY]
+        self.access_token = secret[V2][ACCESS_TOKEN]
+        self.secret_key = secret[V2][SECRET_KEY]
 
 
-def public_request(path):
-    def _public_request_decorator(func):
-        def _public_request_wrapper(self, *args, **kwargs):
+def public_get(path):
+    def _public_get_decorator(func):
+        def _public_get_wrapper(self, *args, **kwargs):
             uri = self.uri + path.value
             params = _kwargs_2_params(kwargs)
-            return _get_public_response(uri=uri, params=params)
-        return _public_request_wrapper
-    return _public_request_decorator
+            return _public_get(uri=uri, params=params)
+        return _public_get_wrapper
+    return _public_get_decorator
 
-def v2_request(path):
-    def _v2_request_decorator(func):
-        def _v2_request_wrapper(self, *args, **kwargs):
+def v1_get(path):
+    def _v1_get_decorator(func):
+        def _v1_get_wrapper(self, *args, **kwargs):
             uri = self.uri + path.value
             params = _kwargs_2_params(kwargs)
             params[ACCESS_TOKEN] = self.access_token
-            return _get_v2_response(uri=uri, params=params, secret_key=self.secret_key)
-        return _v2_request_wrapper
-    return _v2_request_decorator
+            return _public_get(uri=uri, params=params)
+        return _v1_get_wrapper
+    return _v1_get_decorator
+
+def v1_post(path):
+    def _v1_post_decorator(func):
+        def _v1_post_wrapper(self, *args, **kwargs):
+            uri = self.uri + path.value
+            params = _kwargs_2_params(kwargs)
+            params[ACCESS_TOKEN] = self.access_token
+            return _v1_post(uri=uri, params=params)
+        return _v1_post_wrapper
+    return _v1_post_decorator
+
+def v2_post(path):
+    def _v2_post_decorator(func):
+        def _v2_post_wrapper(self, *args, **kwargs):
+            uri = self.uri + path.value
+            params = _kwargs_2_params(kwargs)
+            params[ACCESS_TOKEN] = self.access_token
+            return _v2_post(uri=uri, params=params, secret_key=self.secret_key)
+        return _v2_post_wrapper
+    return _v2_post_decorator
 
 
 def _kwargs_2_params(kwargs):
@@ -53,10 +80,17 @@ def _get_secret(secret_file):
     with open(secret_file) as fp:
         return json.load(fp)
 
-def _get_public_response(uri, params):
+def _public_get(uri, params):
     return requests.get(uri, params=params).json()
 
-def _get_v2_response(uri, params, secret_key):
+def _v1_post(uri, params):
+    headers = {
+        'content-type': 'application/x-www-form-urlencoded',
+        'accept': 'application/json'
+    }
+    return requests.post(uri, headers=headers, params=params).json()
+
+def _v2_post(uri, params, secret_key):
     encoded_payload = _get_encoded_payload(params)
     signature = _get_signature(encoded_payload, secret_key)
     headers = {
