@@ -5,7 +5,7 @@ import hmac
 import json
 import time
 import requests
-from coinone.params import V1, V2, ACCESS_TOKEN, SECRET_KEY, NONCE
+from .params import V1, V2, ACCESS_TOKEN, SECRET_KEY, NONCE
 
 
 class BaseClient:

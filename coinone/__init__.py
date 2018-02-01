@@ -1,10 +1,10 @@
-from coinone.api.public import PublicClient
-import coinone.api.v1.account as accountv1
-import coinone.api.v1.order as orderv1
-import coinone.api.v1.transaction as transactionv1
-import coinone.api.v2.account as accountv2
-import coinone.api.v2.order as orderv2
-import coinone.api.v2.transaction as transactionv2
+from .api.public import PublicClient
+from .api.v1 import account as accountv1
+from .api.v1 import order as orderv1
+from .api.v1 import transaction as transactionv1
+from .api.v2 import account as accountv2
+from .api.v2 import order as orderv2
+from .api.v2 import transaction as transactionv2
 
 class Coinone:
     def __init__(self, secret):
